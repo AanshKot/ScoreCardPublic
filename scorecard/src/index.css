@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap');
+
+/* css reset */
+* { margin: 0; padding: 0; }
+
+
+
+
+
+:root{
+    --color-body: #b6cbce;
+    --color-heading: #eef3db;
+    --color-base: #033f47;
+    --color-base2: #022a30;
+    --color-brand: #e0f780;
+    --color-brand2: #deff58;
+    --sidbar-width: 240px;
+    --font-base: "Bai Jamjuree";
+}
+
+
+
+body{
+    background-color: var(--color-base2) !important;
+    color:var(--color-body) !important;
+    font-family: var(--font-base),sans-serif !important;
+}
+
+
+
+
+h1,h2,h3,h4,h5,h6{
+    color: var(--color-brand);
+    font-weight: 700;
+}
+
+
+
+.navcontainer{
+    width: 100%;
+}
+
+ul{
+    width: 100%;
+}
+
+li{
+    list-style: none;
+    width: 33%;
+}
+
+
+
+
+
+section{
+    min-height: 100vh;
+    height: 100%; 
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+
+table{
+    margin: auto;
+}
+
+.profilePic{
+    width: 100%;
+}
+
+.profilePic .playerAvatar{
+    margin: auto !important;
+}
+
+
+.searchBar{
+    background-color: var(--color-body) !important;
+    width: 100%;
+    max-width: 1300px;
+    text-align: center;
+}
+
+.navbar .nav-link{
+    color: aliceblue;
+}
+
+.navbar .nav-link:hover{
+    color: var(--color-brand);
+}
+
+.navbar .nav-link .active{
+    color: var(--color-brand);
+}
+
+
+input:focus{
+    border: 1.5px dashed var(--color-brand2) !important;
+    /* background-color: #deff58; */
+}
+
+td{
+    margin: 0px 3px;
+    
+}
+
+.teamLogo{
+    width: 100%;
+    max-height: 50px;
+}
