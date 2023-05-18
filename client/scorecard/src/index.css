@@ -92,15 +92,51 @@ table{
     color: var(--color-brand);
 }
 
+.bg-base{
+    background-color: var(--color-base);
+
+}
+
+.shadow-effect{
+    transition: all 0.5s;
+}
+
+.shadow-effect:hover{
+    box-shadow: -6px 6px 0 0px var(--color-brand);
+}
+
+.card-custom{
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 70%;
+    
+}
+
+.card-custom .card-custom-image{
+    overflow: hidden;
+}
+
+.card-custom .card-custom-image img{
+    transition: all 0.4s ease;
+}
+
+.card-custom:hover .card-custom-image img{
+    transform: scale(1.1);
+}
 
 input:focus{
     border: 1.5px dashed var(--color-brand2) !important;
     /* background-color: #deff58; */
 }
 
+td:hover{
+    color: var(--color-brand2);
+}
+
 td{
-    margin: 0px 3px;
     
+    padding: 3px 10px;
 }
 
 .teamLogo{

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import fullpage from "fullpage.js";
+import AOS from 'aos';
 
 
 // const images = require.context('../static', true, /\.jpg$/);
@@ -106,7 +106,7 @@ function InfoRow({info,player}){
 }
 
 function PlayerInfoTable({player}){
-  const player_info = ['firstname','lastname','age','nationality','injured'];
+  const player_info = ['firstname','lastname','age','nationality','height','weight','injured'];
   const player_info_list = [];
   let profile_pic = null
   !player.photo || player.photo.length === 0 ? profile_pic = "../static/images/noplayer.png":profile_pic = player.photo
@@ -120,20 +120,22 @@ function PlayerInfoTable({player}){
 
   return(
     <section id='playerInfoTable' className='mb-3'>
-      <div className='profilePic d-block text-center mt-5'> <img className='playerAvatar rounded-circle '  src= {profile_pic} alt='player_photo'/></div>
-      <div className='playerinfoTable d-block text-center mt-3'>
-        <h2> Player Profile </h2>
-        <table>
-          <thead>
-            <tr>
-              <th className='text-align center'>Bio</th>
-              <th>Info</th>
-            </tr>
-          </thead>
-          <tbody>{player_info_list}</tbody>
-        </table>
+      <div className='card-custom rounded-4 bg-base shadow-effect mt-5'>
+        <div className='playerinfoTable d-block text-center'>
+          <div className='card-custom-image d-block text-center mt-5'> <img className='playerAvatar rounded-4 '  src= {profile_pic} alt='player_photo'/></div>
+          <h2> Player Profile </h2>
+          <table>
+            <thead>
+              <tr>
+                <th className='text-align-center justify-content-center'>Bio</th>
+                <th>Info</th>
+              </tr>
+            </thead>
+            <tbody>{player_info_list}</tbody>
+          </table>
+            
           
-        
+        </div>
       </div>
     </section>
   )
@@ -156,15 +158,19 @@ function PlayerStatTable({stats}){
   }
   return(
     <section id='playerStatTable'>
-      <div className='playerstatTable d-block text-center'>
-        <h2>2023 - 2024 Statistics</h2>
-          <table>
-            <thead>
-            </thead>
-            <tbody>{stat_info_list}</tbody>
-          </table>
+      <div className='card-custom rounded-4 bg-base shadow-effect mt-5'>
+        <div className='playerstatTable d-block text-center'>
+          <h2>2023 - 2024 Statistics</h2>
+            <table>
+              <thead>
+                <th>Stat</th>
+                <th>Stat Info</th>
+              </thead>
+              <tbody>{stat_info_list}</tbody>
+            </table>
+            
           
-        
+        </div>
       </div>
     </section>
   )
@@ -186,8 +192,11 @@ function StatTable({player,stats}){
 
 function SearchBar(){
   const [searchText,setsearchText] = useState('');
+
+
+
   return(
-      <section id = "search" className='d-flex flex-column justify-content-center align-items-center' >
+      <section id = "search" className='d-flex flex-column justify-content-center align-items-center'>
         <div>
           <form className= "form-search d-flex justify-content-center align-items-center ">
               <input className='searchBar  rounded-pill mt-3 mb-3 '  placeholder='Search Player...' type='text'/>
@@ -260,9 +269,8 @@ function NavBar(){
 }
 
 export default function ScoreCard(){
+
   
-
-
   return(
     <div className='scoreCard'>
       <NavBar/>
