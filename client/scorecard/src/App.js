@@ -1,18 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import AOS from 'aos';
+import { Link, useNavigate } from "react-router-dom";
+
+
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+
 
 
 // const images = require.context('../static', true, /\.jpg$/);
 // const imagePaths = images.keys().map(key => "../static" + key.slice(1));
 
-const jsonObj = JSON.parse('{"get":"players","parameters":{"id":"276","season":"2019"},"errors":[],"results":1,"paging":{"current":1,"total":1},"response":[{"player":{"id":276,"name":"Neymar","firstname":"Neymar","lastname":"da Silva Santos Júnior","age":28,"birth":{"date":"1992-02-05","place":"Mogi das Cruzes","country":"Brazil"},"nationality":"Brazil","height":"175 cm","weight":"68 kg","injured":false,"photo":"https://media.api-sports.io/football/players/276.png"},"statistics":[{"team":{"id":85,"name":"Paris Saint Germain","logo":"https://media.api-sports.io/football/teams/85.png"},"league":{"id":61,"name":"Ligue 1","country":"France","logo":"https://media.api-sports.io/football/leagues/61.png","flag":"https://media.api-sports.io/flags/fr.svg","season":2019},"games":{"appearences":15,"lineups":15,"minutes":1322,"number":null,"position":"Attacker","rating":"8.053333","captain":false},"substitutes":{"in":0,"out":3,"bench":0},"shots":{"total":70,"on":36},"goals":{"total":13,"conceded":null,"assists":6,"saves":0},"passes":{"total":704,"key":39,"accuracy":79},"tackles":{"total":13,"blocks":0,"interceptions":4},"duels":{"total":null,"won":null},"dribbles":{"attempts":143,"success":88,"past":null},"fouls":{"drawn":62,"committed":14},"cards":{"yellow":3,"yellowred":1,"red":0},"penalty":{"won":1,"commited":null,"scored":4,"missed":1,"saved":null}}]}]}');
-
-const playerObj = jsonObj.response[0].player;
-const statsObj = jsonObj.response[0].statistics[0];
 
 // console.log(statsObj);
 // console.log(playerObj);
+
+
+import { Route, Routes } from "react-router-dom";
 
 function StatRow({statkey,stat,stats}){
   
@@ -106,10 +109,14 @@ function InfoRow({info,player}){
 }
 
 function PlayerInfoTable({player}){
+  
   const player_info = ['firstname','lastname','age','nationality','height','weight','injured'];
   const player_info_list = [];
   let profile_pic = null
-  !player.photo || player.photo.length === 0 ? profile_pic = "../static/images/noplayer.png":profile_pic = player.photo
+
+  // console.log(player.photo === "-");
+
+  player.photo === "-" ? profile_pic = "../static/images/noplayer.png":profile_pic = player.photo;
   
   player_info.forEach((info_piece) => {   
     player_info_list.push(<InfoRow info ={info_piece} player = {player}/>)
@@ -150,7 +157,7 @@ function PlayerStatTable({stats}){
   stat_info.set('games',['appearences','minutes','position','rating','captain'])
   stat_info.set('goals',['total','assists'])
   const stat_info_list = []
-  let season_next = parseInt(stats["league"]["season"]) + 1;
+  
   for(let [key,values] of stat_info.entries()){
     for(let value of values){
       stat_info_list.push(<StatRow statkey = {key} stat = {value} stats={stats}/>);
@@ -160,7 +167,7 @@ function PlayerStatTable({stats}){
     <section id='playerStatTable'>
       <div className='card-custom rounded-4 bg-base shadow-effect mt-5'>
         <div className='playerstatTable d-block text-center'>
-          <h2>2023 - 2024 Statistics</h2>
+          <h2>2022 - 2023 Statistics</h2>
             <table>
               <thead>
                 <th>Stat</th>
@@ -190,44 +197,117 @@ function StatTable({player,stats}){
   )
 }
 
-function SearchBar(){
-  const [searchText,setsearchText] = useState('');
+function DropdownRow({playerObj,statObj}){
+    // <tr className='playerInfo'> 
+  //   <td>{info}</td>
+  //   <td>{input_info}</td> 
+  //   <td>{player_flag_img}</td>
+  //   </tr>
 
+  return(
+    <tr className='dropdown-row'><button> <td><img src={playerObj.photo} className='teamLogo' alt='dropdownimage' /></td> <td>{statObj.games.rating}</td> <td>{playerObj.firstname}</td> <td>{playerObj.lastname}</td></button></tr>
+  );
+}
+
+
+function DropDown({searchText,onResponseChange}){
+  const [queriedPlayers,setQueriedPlayers] = useState([]);
+  
+
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const response = await fetch(`http://localhost:5050/player/${searchText}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setQueriedPlayers(data);
+        } else {
+          console.error('Error:', response.status);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    if (searchText) {
+      fetchPlayers();
+    } else {
+      setQueriedPlayers([]);
+    }
+  }, [searchText]);
+
+  
+
+
+  let player_row = [];
+
+  if(queriedPlayers.length === 0){
+    player_row.push(<tr> <td>No Results Found!</td> </tr>)
+  }
+
+  else{
+    const maxResults = Math.min(queriedPlayers.length, 3);
+
+    for (let i = 0; i < maxResults; i++) {
+      player_row.push(<DropdownRow playerObj={queriedPlayers[i].player} statObj={queriedPlayers[i].statistics[0]} />);
+    }
+  }
+
+  return(
+    <div className='dropdown'>
+      <table>
+        <thead>
+          <th>Search Results</th>
+        </thead>
+        <tbody>{player_row}</tbody>
+      </table>
+    </div>
+    
+  );
+
+  
+}
+
+function SearchBar({searchText,onSearchTextChange}){
+
+  
 
 
   return(
+    <>
       <section id = "search" className='d-flex flex-column justify-content-center align-items-center'>
         <div>
           <form className= "form-search d-flex justify-content-center align-items-center ">
-              <input className='searchBar  rounded-pill mt-3 mb-3 '  placeholder='Search Player...' type='text'/>
+              <input className='searchBar  rounded-pill mt-3 mb-3 ' value={searchText} onChange={(e) => onSearchTextChange(e.target.value)}  placeholder='Search Player...' type='text'/>
 
-            {/* inside searchbar there will be a div with a dropdown menu */}
-            {/* e.g. <dropDown/> */}
           
           </form>
         </div>
       </section>
+      
+    </>
     
   )
 }
 
 function NavBar(){
-  const [scrollPosition,setScrollPosition] = useState(0);
-  const [showSearchBar, setShowSearchBar] = useState(false);
+  // const [scrollPosition,setScrollPosition] = useState(0);
+  // const [showSearchBar, setShowSearchBar] = useState(false);
 
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setScrollPosition(window.scrollY);
+  //   };
 
-    window.addEventListener("scroll",handleScroll);
+  //   window.addEventListener("scroll",handleScroll);
 
-    return () => {
-      window.removeEventListener("scroll",handleScroll);
-    };
+  //   return () => {
+  //     window.removeEventListener("scroll",handleScroll);
+  //   };
 
-  },[]);
+  // },[]);
 
     // useEffect(() => {
     //   if (scrollPosition > 500) {
@@ -258,9 +338,9 @@ function NavBar(){
               </li>
             </ul>
 
-            {showSearchBar && (
+            {/* {showSearchBar && (
             <SearchBar/>
-          )}
+          )} */}
           </div>
         </div>
       </nav>
@@ -269,13 +349,128 @@ function NavBar(){
 }
 
 export default function ScoreCard(){
+  const navigate = useNavigate();
+  const [searchText,setsearchText] = useState('');
+  const [responseObj,setResponseObj] = useState({
+  "player": {
+    "id": 276,
+    "name": "-",
+    "firstname": "-",
+    "lastname": "-",
+    "age": "-",
+    "birth": {
+      "date": "-",
+      "place": "-",
+      "country": "-"
+    },
+    "nationality": "-",
+    "height": "-",
+    "weight": "-",
+    "injured": false,
+    "photo": "-"
+  },
+  "statistics": [
+    {
+      "team": {
+        "id": "-",
+        "name": "-",
+        "logo": "-"
+      },
+      "league": {
+        "id": "-",
+        "name": "-",
+        "country": "-",
+        "logo": "-",
+        "flag": "-",
+        "season": "-"
+      },
+      "games": {
+        "appearences": "-",
+        "lineups": 15,
+        "minutes": "-",
+        "number": null,
+        "position": "-",
+        "rating": "-",
+        "captain": false
+      },
+      "substitutes": {
+        "in": 0,
+        "out": 3,
+        "bench": 0
+      },
+      "shots": {
+        "total": "-",
+        "on": "-"
+      },
+      "goals": {
+        "total": "-",
+        "conceded": null,
+        "assists": "-",
+        "saves": "-"
+      },
+      "passes": {
+        "total": "-",
+        "key": "-",
+        "accuracy": "-"
+      },
+      "tackles": {
+        "total": "-",
+        "blocks": 0,
+        "interceptions": "-"
+      },
+      "duels": {
+        "total": "-",
+        "won": "-"
+      },
+      "dribbles": {
+        "attempts": "-",
+        "success": "-",
+        "past": "-"
+      },
+      "fouls": {
+        "drawn": "-",
+        "committed": "-"
+      },
+      "cards": {
+        "yellow": "-",
+        "yellowred": "-",
+        "red": 0
+      },
+      "penalty": {
+        "won": "-",
+        "commited": null,
+        "scored": "-",
+        "missed": "-",
+        "saved": null
+      }
+    }
+  ]
+}
+);
 
+// console.log(responseObj.player);
+// console.log(responseObj.statistics);
+
+  function handleResponseChange({givenResponse}){
+    return setResponseObj( (prev) => {
+      return {...prev, ...givenResponse};
+    });
+  }
   
+  function handleSearchChange(search_input){
+    setsearchText(search_input);
+    navigate("/:lastname");
+  };
+
   return(
     <div className='scoreCard'>
       <NavBar/>
-      <SearchBar/>
-      <StatTable player={playerObj} stats={statsObj}/>
+      <SearchBar searchText={searchText} onSearchTextChange={handleSearchChange}/>
+      <Routes>
+        <Route path="/:lastname" element= {<DropDown searchText={searchText} onResponseChange={handleResponseChange} />} />
+      </Routes>
+      
+      <StatTable player={responseObj.player} stats={responseObj.statistics[0]}/>
     </div>
   )
 }
