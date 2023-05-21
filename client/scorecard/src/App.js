@@ -212,7 +212,7 @@ function DropdownRow({playerObj,statObj}){
 
 function DropDown({searchText,onResponseChange}){
   const [queriedPlayers,setQueriedPlayers] = useState([]);
-  
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -233,6 +233,7 @@ function DropDown({searchText,onResponseChange}){
     if (searchText) {
       fetchPlayers();
     } else {
+      navigate("/");
       setQueriedPlayers([]);
     }
   }, [searchText]);
