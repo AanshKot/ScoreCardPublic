@@ -421,7 +421,6 @@ function SearchBar(){
 
   function handleResponseChange(givenResponse){
     return setResponseObj( (prev) => {
-    
       return {...prev, ...givenResponse};
     });
   }
