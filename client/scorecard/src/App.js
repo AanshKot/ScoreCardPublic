@@ -154,8 +154,17 @@ function PlayerStatTable({stats}){
   stat_info.set('team',['name'])
   stat_info.set('league',['name'])
   //if(statistics.games.position == 'Attacker') display the goal and assists stat else display the defending stats
-  stat_info.set('games',['appearences','minutes','position','rating','captain'])
-  stat_info.set('goals',['total','assists'])
+  
+  stat_info.set('games',['captain','appearences','minutes','position','rating'])
+  
+  if(stats.games.position === "Attacker" || stats.games.position === "Midfielder"){
+    stat_info.set('goals',['total','assists'])
+  }
+
+  else{
+    stat_info.set('tackles',['blocks','interceptions']);
+  }
+
   const stat_info_list = []
   
   for(let [key,values] of stat_info.entries()){
@@ -197,15 +206,47 @@ function StatTable({player,stats}){
   )
 }
 
-function DropdownRow({playerObj,statObj}){
-    // <tr className='playerInfo'> 
-  //   <td>{info}</td>
-  //   <td>{input_info}</td> 
-  //   <td>{player_flag_img}</td>
-  //   </tr>
+function DropdownRow({playerObj,statObj,responseObj,onResponseClick}){
+  
+  if (!statObj.games.rating) {
+    statObj.games.rating = "unrated";
+  } else if (!isNaN(Number(statObj.games.rating))) {
+    statObj.games.rating = parseFloat(statObj.games.rating).toFixed(2);
+  }
+  // !statObj.goals.total ? statObj.goals.total = 0:statObj.goals.total = statObj.goals.total;
+  // !statObj.tackles.blocks ? statObj.tackles.blocks = 0:statObj.tackles.blocks = statObj.tackles.blocks;
+  // !statObj.tackles.interceptions ? statObj.tackles.interceptions = 0:statObj.tackles.interceptions = statObj.tackles.interceptions;
+
+  const player_info_dict = ["age","height","weight"];
+
+  for(const i of player_info_dict){
+    if(!playerObj[i]){
+      playerObj[i] = "undefined";
+    }
+  }
+
+  const stat_info = new Map();
+
+  stat_info.set('games',['appearences','minutes'])
+  
+  if(statObj.games.position === "Attacker" || statObj.games.position === "Midfielder"){
+    stat_info.set('goals',['total','assists'])
+  }
+
+  else{
+    stat_info.set('tackles',['blocks','interceptions']);
+  }
+
+  for(let [key,values] of stat_info.entries()){
+    for(const value of values){
+      if(!statObj[key][value]){
+        statObj[key][value] = 0;
+      }
+    }
+  }
 
   return(
-    <tr className='dropdown-row'><button> <td><img src={playerObj.photo} className='teamLogo' alt='dropdownimage' /></td> <td>{statObj.games.rating}</td> <td>{playerObj.firstname}</td> <td>{playerObj.lastname}</td></button></tr>
+    <tr className='dropdownRow rounded-4'><button className ="shadow-effect rounded-4" onClick={() => onResponseClick(responseObj)}> <td><img  src={playerObj.photo} className='teamLogo rounded-circle' alt='dropdownimage' /></td> <td>{statObj.games.rating}</td> <td>{playerObj.firstname}</td> <td>{playerObj.lastname}</td></button></tr>
   );
 }
 
@@ -220,7 +261,7 @@ function DropDown({searchText,onResponseChange}){
         const response = await fetch(`http://localhost:5050/player/${searchText}`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
           setQueriedPlayers(data);
         } else {
           console.error('Error:', response.status);
@@ -251,7 +292,7 @@ function DropDown({searchText,onResponseChange}){
     const maxResults = Math.min(queriedPlayers.length, 3);
 
     for (let i = 0; i < maxResults; i++) {
-      player_row.push(<DropdownRow playerObj={queriedPlayers[i].player} statObj={queriedPlayers[i].statistics[0]} />);
+      player_row.push(<DropdownRow playerObj={queriedPlayers[i].player} statObj={queriedPlayers[i].statistics[0]} responseObj={queriedPlayers[i]} onResponseClick={onResponseChange} />);
     }
   }
 
@@ -259,7 +300,7 @@ function DropDown({searchText,onResponseChange}){
     <div className='dropdown'>
       <table>
         <thead>
-          <th>Search Results</th>
+          <th className='dropdown-heading d-flex justify-content-center'>Search Results</th>
         </thead>
         <tbody>{player_row}</tbody>
       </table>
@@ -270,22 +311,138 @@ function DropDown({searchText,onResponseChange}){
   
 }
 
-function SearchBar({searchText,onSearchTextChange}){
+function SearchBar(){
 
-  
+  const navigate = useNavigate();
+  const [searchText,setsearchText] = useState('');
+  const [responseObj,setResponseObj] = useState({
+    "player": {
+      "id": 276,
+      "name": "-",
+      "firstname": "-",
+      "lastname": "-",
+      "age": "-",
+      "birth": {
+        "date": "-",
+        "place": "-",
+        "country": "-"
+      },
+      "nationality": "-",
+      "height": "-",
+      "weight": "-",
+      "injured": false,
+      "photo": false
+    },
+    "statistics": [
+      {
+        "team": {
+          "id": "-",
+          "name": "-",
+          "logo": "-"
+        },
+        "league": {
+          "id": "-",
+          "name": "-",
+          "country": "-",
+          "logo": "-",
+          "flag": "-",
+          "season": "-"
+        },
+        "games": {
+          "appearences": "-",
+          "lineups": 15,
+          "minutes": "-",
+          "number": null,
+          "position": "-",
+          "rating": "-",
+          "captain": false
+        },
+        "substitutes": {
+          "in": 0,
+          "out": 3,
+          "bench": 0
+        },
+        "shots": {
+          "total": "-",
+          "on": "-"
+        },
+        "goals": {
+          "total": "-",
+          "conceded": null,
+          "assists": "-",
+          "saves": "-"
+        },
+        "passes": {
+          "total": "-",
+          "key": "-",
+          "accuracy": "-"
+        },
+        "tackles": {
+          "total": "-",
+          "blocks": 0,
+          "interceptions": "-"
+        },
+        "duels": {
+          "total": "-",
+          "won": "-"
+        },
+        "dribbles": {
+          "attempts": "-",
+          "success": "-",
+          "past": "-"
+        },
+        "fouls": {
+          "drawn": "-",
+          "committed": "-"
+        },
+        "cards": {
+          "yellow": "-",
+          "yellowred": "-",
+          "red": 0
+        },
+        "penalty": {
+          "won": "-",
+          "commited": null,
+          "scored": "-",
+          "missed": "-",
+          "saved": null
+        }
+      }
+    ]
+  }
+  );
 
+
+  function handleSearchChange(search_input){
+    setsearchText(search_input);
+    navigate("/:lastname");
+  };
+
+
+  function handleResponseChange(givenResponse){
+    return setResponseObj( (prev) => {
+    
+      return {...prev, ...givenResponse};
+    });
+  }
 
   return(
     <>
       <section id = "search" className='d-flex flex-column justify-content-center align-items-center'>
         <div>
           <form className= "form-search d-flex justify-content-center align-items-center ">
-              <input className='searchBar  rounded-pill mt-3 mb-3 ' value={searchText} onChange={(e) => onSearchTextChange(e.target.value)}  placeholder='Search Player...' type='text'/>
+              <input className='searchBar  rounded-pill mt-3 mb-3 ' value={searchText} onChange={(e) => handleSearchChange(e.target.value)}  placeholder='Search Player...' type='text'/>
 
           
           </form>
         </div>
+
+        <Routes>
+          <Route path="/:lastname" element= {<DropDown searchText={searchText} onResponseChange={handleResponseChange} />} />
+        </Routes>
       </section>
+
+      <StatTable player={responseObj.player} stats={responseObj.statistics[0]}/>
       
     </>
     
@@ -350,128 +507,19 @@ function NavBar(){
 }
 
 export default function ScoreCard(){
-  const navigate = useNavigate();
-  const [searchText,setsearchText] = useState('');
-  const [responseObj,setResponseObj] = useState({
-  "player": {
-    "id": 276,
-    "name": "-",
-    "firstname": "-",
-    "lastname": "-",
-    "age": "-",
-    "birth": {
-      "date": "-",
-      "place": "-",
-      "country": "-"
-    },
-    "nationality": "-",
-    "height": "-",
-    "weight": "-",
-    "injured": false,
-    "photo": "-"
-  },
-  "statistics": [
-    {
-      "team": {
-        "id": "-",
-        "name": "-",
-        "logo": "-"
-      },
-      "league": {
-        "id": "-",
-        "name": "-",
-        "country": "-",
-        "logo": "-",
-        "flag": "-",
-        "season": "-"
-      },
-      "games": {
-        "appearences": "-",
-        "lineups": 15,
-        "minutes": "-",
-        "number": null,
-        "position": "-",
-        "rating": "-",
-        "captain": false
-      },
-      "substitutes": {
-        "in": 0,
-        "out": 3,
-        "bench": 0
-      },
-      "shots": {
-        "total": "-",
-        "on": "-"
-      },
-      "goals": {
-        "total": "-",
-        "conceded": null,
-        "assists": "-",
-        "saves": "-"
-      },
-      "passes": {
-        "total": "-",
-        "key": "-",
-        "accuracy": "-"
-      },
-      "tackles": {
-        "total": "-",
-        "blocks": 0,
-        "interceptions": "-"
-      },
-      "duels": {
-        "total": "-",
-        "won": "-"
-      },
-      "dribbles": {
-        "attempts": "-",
-        "success": "-",
-        "past": "-"
-      },
-      "fouls": {
-        "drawn": "-",
-        "committed": "-"
-      },
-      "cards": {
-        "yellow": "-",
-        "yellowred": "-",
-        "red": 0
-      },
-      "penalty": {
-        "won": "-",
-        "commited": null,
-        "scored": "-",
-        "missed": "-",
-        "saved": null
-      }
-    }
-  ]
-}
-);
+
+  
 
 // console.log(responseObj.player);
 // console.log(responseObj.statistics);
 
-  function handleResponseChange({givenResponse}){
-    return setResponseObj( (prev) => {
-      return {...prev, ...givenResponse};
-    });
-  }
-  
-  function handleSearchChange(search_input){
-    setsearchText(search_input);
-    navigate("/:lastname");
-  };
+
 
   return(
     <div className='scoreCard'>
       <NavBar/>
-      <SearchBar searchText={searchText} onSearchTextChange={handleSearchChange}/>
-      <Routes>
-        <Route path="/:lastname" element= {<DropDown searchText={searchText} onResponseChange={handleResponseChange} />} />
-      </Routes>
-      
-      <StatTable player={responseObj.player} stats={responseObj.statistics[0]}/>
+      <SearchBar />
+
     </div>
   )
 }
