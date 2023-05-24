@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useNavigate } from "react-router-dom";
-
+import CompareTable from '../src/components/compare';
 
 // const { MongoClient, ServerApiVersion } = require('mongodb');
 
@@ -349,10 +349,10 @@ function SearchBar(){
           "season": "-"
         },
         "games": {
-          "appearences": "-",
+          "appearences": 0,
           "lineups": 15,
           "minutes": "-",
-          "number": null,
+          "number": null, 
           "position": "-",
           "rating": "-",
           "captain": false
@@ -363,48 +363,48 @@ function SearchBar(){
           "bench": 0
         },
         "shots": {
-          "total": "-",
-          "on": "-"
+          "total": 0,
+          "on": 0
         },
         "goals": {
-          "total": "-",
+          "total": 0,
           "conceded": null,
-          "assists": "-",
-          "saves": "-"
+          "assists": 0,
+          "saves": 0
         },
         "passes": {
-          "total": "-",
-          "key": "-",
-          "accuracy": "-"
+          "total": 0,
+          "key": 0,
+          "accuracy": 0
         },
         "tackles": {
-          "total": "-",
+          "total": 0,
           "blocks": 0,
-          "interceptions": "-"
+          "interceptions": 0
         },
         "duels": {
-          "total": "-",
-          "won": "-"
+          "total": 0,
+          "won": 0
         },
         "dribbles": {
-          "attempts": "-",
-          "success": "-",
-          "past": "-"
+          "attempts": 0,
+          "success": 0,
+          "past": 0
         },
         "fouls": {
-          "drawn": "-",
-          "committed": "-"
+          "drawn": 0,
+          "committed": 0
         },
         "cards": {
-          "yellow": "-",
-          "yellowred": "-",
+          "yellow": 0,
+          "yellowred": 0,
           "red": 0
         },
         "penalty": {
-          "won": "-",
+          "won": 0,
           "commited": null,
-          "scored": "-",
-          "missed": "-",
+          "scored": 0,
+          "missed": 0,
           "saved": null
         }
       }
@@ -443,6 +443,11 @@ function SearchBar(){
 
       <StatTable player={responseObj.player} stats={responseObj.statistics[0]}/>
       
+
+      {responseObj.player.name !== "-" && <CompareTable currResponseObj={responseObj} />}
+
+      {/*  have to do the case where there is no response object
+    conditional rendering of the comparison chart, render the comparison section only if the name of the currResponseObj is not "-" */}
     </>
     
   )
@@ -493,6 +498,11 @@ function NavBar(){
               <li className="nav-item">
                 <a className="nav-link" href="#playerStatTable">Player Season Statistics</a>
               </li>
+
+              <li className="nav-item">
+                <a className="nav-link" href="#compareTable">Visualize and Compare Stats</a>
+              </li>
+
             </ul>
 
             {/* {showSearchBar && (

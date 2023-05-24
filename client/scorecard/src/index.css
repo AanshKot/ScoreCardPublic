@@ -24,6 +24,7 @@ body{
     background-color: var(--color-base2) !important;
     color:var(--color-body) !important;
     font-family: var(--font-base),sans-serif !important;
+   
 }
 
 
@@ -46,7 +47,7 @@ ul{
 
 li{
     list-style: none;
-    width: 33%;
+    width: 25%;
 }
 
 
@@ -152,3 +153,18 @@ button{
     width: 100%;
 }
 
+.compareTable{
+    height: 100vh;
+}
+
+.compareContainer{
+    height: 100%;
+}
+
+.comparisonChart{
+    margin: 30px;
+}
+
+.compareChart{
+    margin:10px  0px;
+}
