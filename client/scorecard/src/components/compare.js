@@ -46,7 +46,9 @@ function DropdownRow({playerObj,statObj,responseObj,onResponseClick}){
     }
   
     return(
-      <tr className='dropdownRow rounded-4'><button className ="shadow-effect rounded-4" onClick={() => onResponseClick(responseObj)}> <td><img  src={playerObj.photo} className='teamLogo rounded-circle' alt='dropdownimage' /></td> <td>{statObj.games.rating}</td> <td>{playerObj.firstname}</td> <td>{playerObj.lastname}</td></button></tr>
+      
+        <tr className='dropdownRow  rounded-4'><button className ="shadow-effect rounded-4" onClick={() => onResponseClick(responseObj)}> <td><img  src={playerObj.photo} className='teamLogo rounded-circle' alt='dropdownimage' /></td> <td>{statObj.games.rating}</td> <td>{playerObj.firstname}</td> <td>{playerObj.lastname}</td></button></tr>
+    
     );
   }
   
@@ -362,7 +364,7 @@ export default function CompareTable({currResponseObj}){
          <div>
           <div className='compareChart'>
                 <form className= "form-search d-flex justify-content-center align-items-center ">
-                    <input className='searchBar  rounded-pill mt-3 mb-3 ' value={searchText} onChange={(e) => handleSearchChange(e.target.value)}  placeholder='Search Player to compare to...' type='text'/>
+                    <input className='searchBar col-6 rounded-pill mt-3 mb-3 ' value={searchText} onChange={(e) => handleSearchChange(e.target.value)}  placeholder='Search Player to compare to...' type='text'/>
     
                 
                 </form>

@@ -427,6 +427,8 @@ function SearchBar(){
 
   return(
     <>
+    <NavBar responseObj = {responseObj}/>
+
       <section id = "search" className='d-flex flex-column justify-content-center align-items-center'>
         <div>
           <form className= "form-search d-flex justify-content-center align-items-center ">
@@ -441,7 +443,7 @@ function SearchBar(){
         </Routes>
       </section>
 
-      <StatTable player={responseObj.player} stats={responseObj.statistics[0]}/>
+      { responseObj.player.name !== "-" && <StatTable player={responseObj.player} stats={responseObj.statistics[0]}/>}
       
 
       {responseObj.player.name !== "-" && <CompareTable currResponseObj={responseObj} />}
@@ -453,7 +455,7 @@ function SearchBar(){
   )
 }
 
-function NavBar(){
+function NavBar({responseObj}){
   // const [scrollPosition,setScrollPosition] = useState(0);
   // const [showSearchBar, setShowSearchBar] = useState(false);
 
@@ -478,6 +480,14 @@ function NavBar(){
     //     setShowSearchBar(false);
     //   }
     // }, [scrollPosition]);
+  
+  function handleClick(response){
+    console.log(response.player);
+    if(response.player.firstname === "-"){
+      console.log("no player");
+      window.alert("Must search and select a player first!");
+    }
+  }
 
   return(
     <div className='mb-5'>
@@ -490,17 +500,17 @@ function NavBar(){
           <div id = 'navbarNav'className="navcontainer collapse navbar-collapse">
             <ul className="navbar-nav ms-auto flex-lg-md-sm-row  text-lg-center">
               <li className="nav-item">
-                <a className="nav-link" aria-current="page" href="#search">Search Player</a>
+               <a className="nav-link" aria-current="page" href="#search" onClick={() => handleClick(responseObj)}>Search Player</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#playerInfoTable">Player Bio</a>
+                <a className="nav-link" href="#playerInfoTable" onClick={() => handleClick(responseObj)} >Player Bio</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#playerStatTable">Player Season Statistics</a>
+                <a className="nav-link" href="#playerStatTable" onClick={() => handleClick(responseObj)}>Player Season Statistics</a>
               </li>
 
               <li className="nav-item">
-                <a className="nav-link" href="#compareTable">Visualize and Compare Stats</a>
+                <a className="nav-link" href="#compareTable" onClick={() => handleClick(responseObj)}>Visualize and Compare Stats</a>
               </li>
 
             </ul>
@@ -526,7 +536,7 @@ export default function ScoreCard(){
 
   return(
     <div className='scoreCard'>
-      <NavBar/>
+      
       <SearchBar />
 
     </div>
